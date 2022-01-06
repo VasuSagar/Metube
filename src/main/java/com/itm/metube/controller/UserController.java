@@ -1,29 +1,47 @@
 package com.itm.metube.controller;
 
-import com.itm.metube.model.User;
-import com.itm.metube.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import com.itm.metube.service.UserService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/api/user")
+@AllArgsConstructor
 public class UserController {
-    @Autowired
-    private UserRepository userRepository;
 
-    @PostMapping("/add")
-    public String saveUser(@RequestBody User user){
-        userRepository.save(user);
-        return "USER";
+    private final UserService userService;
+
+
+    @PostMapping("/subscribe/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void subscribeUser(@PathVariable String userId) {
+        userService.subscribeUser(userId);
     }
 
-    @GetMapping("/get")
-    public List<User> getUser(){
-        return userRepository.findAll();
+    @PostMapping("/unsubscribe/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void unsubscribe(@PathVariable String userId) {
+        userService.unsubscribe(userId);
     }
+
+    @PostMapping("/getAllSubscribedUser")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Object> getAllSubscribedUser() {
+        return userService.getAllSubscribedUsers();
+    }
+
+    @GetMapping("/getAllHistoryVideos")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Map<String, Object>> getAllHistoryVideos(@RequestParam(required = false) String search) {
+        return userService.getAllHistoryVideos(search);
+    }
+
+
+
 
 }
